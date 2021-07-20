@@ -3,6 +3,7 @@ import { Component } from 'vue-property-decorator';
 import ns from '@/store/namespaces';
 import * as history from './history';
 import DatasetModal from '@/components/modals/dataset-modal/dataset-modal';
+import ConnectDatabaseModal from '@/components/modals/connect-database-modal/connect-database-modal';
 import template from './data-source.html';
 import { DatasetInfo, GetDatasetOptions } from '@/store/dataset/types';
 import { SubsetNode } from '@/components/subset-node';
@@ -19,6 +20,7 @@ export interface DataSourceSave {
   template: injectNodeTemplate(template),
   components: {
     DatasetModal,
+    ConnectDatabaseModal,
   },
 })
 export default class DataSource extends SubsetNode {
@@ -93,4 +95,9 @@ export default class DataSource extends SubsetNode {
     this.activate(); // Make sure that the option panel is mounted before using datasetModal.
     this.$nextTick(() => (this.$refs.datasetModal as DatasetModal).open());
   }
+  private openConnectDatabaseModal() {
+    this.activate(); // Make sure that the option panel is mounted before using datasetModal.
+    this.$nextTick(() => (this.$refs.connectDatabaseModal as ConnectDatabaseModal).open());
+  }
+
 }
