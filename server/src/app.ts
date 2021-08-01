@@ -22,6 +22,7 @@ import flowsenseApi from './api/flowsense';
 import logApi from './api/log';
 
 const app = express();
+
 connectMongo();
 
 // Server config

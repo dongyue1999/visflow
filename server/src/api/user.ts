@@ -5,14 +5,30 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import User, { UserModel } from '../models/user';
 import { IVerifyOptions } from 'passport-local';
-import { isMongooseConnected } from '../mongo';
+import {MconnectMongo, isMongooseConnected} from '../mongo';
 import { checkValidationResults } from '../common/util';
+import Dataset from "@/models/dataset";
+import path from "path";
+import {DATA_PATH} from "@/config/env";
+import fs from "fs-extra";
+var DB_URI = '';
 
 const userApi = (app: Express) => {
+  app.post('/api/user/connect', (req: Request, res: Response) => {
+    console.log('api-user-connecting...');
+    const database_type=req.body.database_type;
+    const uri=req.body.uri;
+    DB_URI = req.body.uri;
+    //console.log(DB_URI);
+    MconnectMongo(uri);
+    console.log('连接成功');
+
+  });
+
   app.post('/api/user/*', isMongooseConnected);
   app.post('/api/user/signup', [
     check('username')
-      .isLength({ min: 3 }).withMessage('username must be at least 3 characters long')
+      .isLength({ min: 3 }).withMessage('用户名至少3个字符')
       .matches(/^[a-z0-9_]+$/).withMessage('username must consist of letters, digits, underscores')
       .matches(/^[a-z]/).withMessage('username must begin with letters')
       .custom(username => {

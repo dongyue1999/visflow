@@ -13,6 +13,14 @@ export const connectMongo = () => {
     .catch(err => console.error('cannot connect to MongoDB', err));
 };
 
+export const MconnectMongo = (uri : string) => {
+  console.log('in mongodb:'+uri);
+  mongoose.Promise = bluebird;
+  mongoose.connect(uri, { useNewUrlParser: true })
+    .then(() => {})
+    .catch(err => console.error('cannot connect to MongoDB', err));
+};
+
 export const sessionStore = () => {
   const MongoStore = require('connect-mongo')(session);
   return new MongoStore({

@@ -1,9 +1,10 @@
 <template>
-<base-modal ref="modal" title="Dataset"
+<base-modal ref="modal" title="数据库"
   :visible-state="visible"
   :on-open="open"
   :on-close="close"
   >
+  <!--
   <template slot="content">
     <div class="list">
     <h5>数据库类型
@@ -22,6 +23,28 @@
         @deselectDataset="onDatasetListDeselect"
       ></dataset-list>
     </div>
+  </template>-->
+    <template slot="content">
+    <b-container fluid>
+      <b-row>
+        <b-col sm="3" class="input-label">数据库类型</b-col>
+        <b-col sm="9"><b-form-input type="text" v-model="database_type"></b-form-input></b-col>
+      </b-row>
+      <b-row>
+        <b-col sm="3" class="input-label">URI</b-col>
+        <b-col sm="9"><b-form-input type="text" v-model="uri"></b-form-input></b-col>
+      </b-row>
+     <b-row>
+     <b-btn class="float-right" variant="outline-success" @click="connect">连接</b-btn>
+     <b-btn class="float-right" variant="outline-secondary" @click="$refs.modal.close()">取消</b-btn>
+    </b-row>
+      <b-row><h5>我的数据集</h5></b-row>
+      <dataset-list ref="datasetList" :selectable="selectable"
+        @selectDataset="onDatasetListSelect"
+        @deselectDataset="onDatasetListDeselect"
+      ></dataset-list>
+    </b-container>
+
   </template>
   <template slot="footer">
     <div v-if="selectable">

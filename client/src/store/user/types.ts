@@ -31,3 +31,7 @@ export interface UserState {
   // Function to be called after the user logins
   loginCallback?: () => void;
 }
+export interface UserConnection {
+  database_type: string;
+  uri: string;
+}

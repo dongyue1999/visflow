@@ -1,20 +1,21 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import mongoose from 'mongoose';
-import FileUpload from '@/components/file-upload/file-upload';
 import DatasetList from '@/components/dataset-list/dataset-list';
 import { DatasetInfo } from '@/store/dataset/types';
 import BaseModal from '@/components/modals/base-modal/base-modal';
-import bluebird from "bluebird";
+import {showSystemMessage} from "@/common/util";
+import ns from "@/store/namespaces";
+import {UserConnection} from "@/store/user/types";
 
 
 @Component({
   components: {
-    FileUpload,
     DatasetList,
     BaseModal,
   },
 })
 export default class DatasetModal extends Vue {
+    @ns.user.Action('connect') private dispatchConnect!: (profile: UserConnection) => Promise<string>;
   @Prop()
   private selectable!: boolean;
 
@@ -23,29 +24,45 @@ export default class DatasetModal extends Vue {
 
   private datasetSelected: DatasetInfo | null = null;
 
+  private database_type='';
+  private uri='';
+
   public open() {
     this.visible = true;
-    (this.$refs.fileUpload as FileUpload).reset();
-
     // Refresh the list on each open call.
     (this.$refs.datasetList as DatasetList).getList();
   }
-  private connect() {
-    // 获取数据库类型和URI
-    // 连接数据库
+  public connect() {
     console.log('连接中···');
-    /*
-    mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://localhost:27017/visflow', {
-      useNewUrlParser: true
-    });
-    mongoose.connection.on('error', (error) => {
-      console.log('MongoDB链接失败，error:', JSON.stringify(error));
-    });
-    mongoose.connection.on('open', () => {
-      console.log('数据库连接成功')
-    });
-    */
+    // 连接上用户输入的数据库
+    // 将里面的dataset读取出来
+    // 断开连接 重新连接回系统数据库
+    // 暴力操作！
+
+    // 连接数据库
+    const modal = this.$refs.modal as BaseModal;
+    this.dispatchConnect({
+      database_type: this.database_type,
+      uri: this.uri,
+    }).then((database_type: string) => { // dispatchConnect()成功之后执行的
+      modal.close();
+      showSystemMessage(this.$store, `Welcome ${database_type}`, 'success');
+    }).catch(modal.errorHandler); // dispatchConnect()失败之后执行的
+
+    // 将里面的dataset读取出来
+    (this.$refs.datasetList as DatasetList).getList();
+    // 怎么刷新一下？
+
+    // 断开连接 重新连接回系统数据库
+    //close();
+    this.dispatchConnect({
+      database_type: this.database_type,
+      uri: 'mongodb://localhost:27017/visflow',
+    }).then((database_type: string) => { // dispatchConnect()成功之后执行的
+      modal.close();
+      showSystemMessage(this.$store, `Welcome ${database_type}`, 'success');
+    }).catch(modal.errorHandler); // dispatchConnect()失败之后执行的
+
   }
 
   private close() {

@@ -1,7 +1,7 @@
 import { Module, ActionContext  } from 'vuex';
 import store, { RootState } from '@/store';
 
-import { UserState, UserInfo, LoginProfile, SignupProfile, ChangePasswordProfile } from './types';
+import {UserState, UserInfo, LoginProfile, SignupProfile, ChangePasswordProfile, UserConnection} from './types';
 import { axiosPost, errorMessage } from '@/common/util';
 
 const initialState: UserState = {
@@ -60,6 +60,13 @@ const actions = {
             context.state.loginCallback();
           }
         })
+        .catch(err => reject(errorMessage(err)));
+    });
+  },
+  connect(context: ActionContext<UserState, RootState>, profile: UserConnection): Promise<string> {
+    return new Promise((resolve, reject) => {
+      axiosPost<UserInfo>('/user/connect', profile)
+        .then(() => resolve())
         .catch(err => reject(errorMessage(err)));
     });
   },
